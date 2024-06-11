@@ -1,0 +1,101 @@
+:root {
+    --main-font-family: "Inter", sans-serif;
+    --main-border-radius: 12px;
+    --brand-primary-color: #FF5E00;
+    --brand-fcs-color: #FFF3EC;
+    /*--brand-primary-color: #ff2e2e;*/
+    --primary-bg-color: #FCFAFA;
+    --primary-text-color: #CCCCCC;
+    --mask-bg-color: #9E9E9E;
+
+    /*  btn  */
+    --btn-bg-color: #16161B;
+    --btn-primary-text-color: #fff;
+    --btn-text-color: #B4B4B4;
+
+    /* input */
+    --input-bg-color: transparent;
+    --input-brd-color: #1C212C;
+    --input-text-color: #485267;
+    /* Navbar */
+    --navbar-bg-color: transparent;
+    --navbar-brd-color: #bbb;
+    --navbar-text-color: #9E9E9E;
+    --navbar-fcs-bg-color: #aaa;
+    --navbar-fcs-brd-color: transparent;
+    --navbar-fcs-text-color: #111;
+    --navbar-brd-radius: var(--main-border-radius);
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+}
+
+body {
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    background: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    font-family: var(--main-font-family);
+}
+
+.cargoBody {
+    margin-top: 72px;
+}
+
+
+.CargoHeadingTitle {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 44px;
+    letter-spacing: 0.02em;
+    color: #000000;
+    margin-bottom: 24px;
+}
+
+.CargoHeadingDesc {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 36px;
+    letter-spacing: 0.04em;
+    color: #686767;
+}
+
+.CargoWidgetBlock {
+    border: solid 1px #F8F8F8;
+    border-radius: var(--main-border-radius);
+    padding: 8px 10px;
+}
+
+.CargoWidgetBlock .CargoWidgetBlockWrapper {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.CargoWidgetBlock .CargoWidgetBlockValue {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height */
+    letter-spacing: 0.02em;
+    color: #000000;
+}
+
+.CargoWidgetBlock .CargoWidgetBlockIcon {
+    color: #FF9863;
+}
