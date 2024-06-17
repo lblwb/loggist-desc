@@ -1,39 +1,53 @@
 import {defineStore} from 'pinia';
+// @ts-ignore
+import {useCookie} from '#app';
 
-const tokenCookieJwt = useCookie('__token');
+//STORE KEY
+const TOKEN_KEY = '__token'; // Define the token key constant
+
+
+//
+const tokenCookieJwt = useCookie(TOKEN_KEY);
 
 interface UserData {
     username: string;
     password: string;
 }
 
+interface AuthState {
+    access_token: string | null;
+    signInStatus: boolean;
+    userData: any | null;
+}
+
 export const useAuthStore = defineStore('auth', {
-    state: () => {
-        // @ts-ignore
-        return {
-            signInStatus: false,
-            access_token: null as string | null,
-            userData: null,
-        };
-    },
+    state: (): AuthState => ({
+        access_token: null,
+        signInStatus: false,
+        userData: null,
+    }),
     getters: {
         getBaseUrlApi(): string {
             const config = useRuntimeConfig();
             return config.public.baseURL;
         },
-        async GetUserData(): Promise<any> {
-            return this.userData ? this.userData : null;
+        getUserData(state: AuthState) {
+            console.log(state.userData);
+            return state.userData ? state.userData : null;
         },
-        checkAuthUser(state): boolean {
+        getToken(state: AuthState) {
+            return state.access_token;
+        },
+        checkAuthUser(state: AuthState): boolean {
             return !!state.access_token;
         }
     },
     actions: {
         setLocStorageToken(tokenValue: string): void {
-            localStorage.setItem('jwt', tokenValue);
+            localStorage.setItem(TOKEN_KEY, tokenValue); // Use the constant
         },
         clearLocStorageToken(): void {
-            localStorage.removeItem('jwt');
+            localStorage.removeItem(TOKEN_KEY); // Use the constant
         },
         setCookieStorageToken(tokenValue: string): void {
             tokenCookieJwt.value = tokenValue;
@@ -65,13 +79,11 @@ export const useAuthStore = defineStore('auth', {
                     }
                 });
 
-                // @ts-ignore
                 const responseToken = response.access;
 
                 if (responseToken) {
                     this.signInStatus = true;
                     this.setToken(responseToken);
-                    //
                     await this.fetchUserData();
                     return response;
                 } else {
@@ -88,24 +100,25 @@ export const useAuthStore = defineStore('auth', {
             this.clearLocStorageToken();
             this.clearCookieStorageToken();
             this.clearStoreToken();
+            this.userData = null;
+            this.signInStatus = false;
         },
 
-        /**
-         * Check User Auth
-         */
-        checkInitialAuth() {
-            const token = this.checkAuthUser;
+        checkInitialAuth(): void {
+            const token = localStorage.getItem(TOKEN_KEY) || tokenCookieJwt.value; // Use the constant
             if (token) {
                 this.setStoreToken(token);
                 this.signInStatus = true;
+                this.fetchUserData().catch((error) => {
+                    console.error('Failed to fetch user data:', error);
+                    this.logoutUser();
+                });
             } else {
                 const router = useRouter();
                 router.push({name: 'auth-login'});
             }
         },
-        /**
-         * Fetch User Data
-         */
+
         async fetchUserData() {
             try {
                 const response = await $fetch('/api/user/data', {
@@ -115,8 +128,9 @@ export const useAuthStore = defineStore('auth', {
                         Authorization: `Bearer ${this.access_token}`
                     }
                 });
-                // @ts-ignore
+
                 this.userData = response.user;
+                this.signInStatus = true;
                 return response;
             } catch (error) {
                 console.error('Failed to fetch user data:', error);

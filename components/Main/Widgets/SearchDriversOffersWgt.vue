@@ -1,3 +1,92 @@
+<script setup lang="ts">
+
+import * as notivue from "notivue";
+import {useAuthModalStore} from "~/stores/auth/modal/singIn";
+import {useAuthStore} from "~/stores/auth";
+import SelectBtnCityList from "~/components/Main/Form/SelectBtnCityList.vue";
+import SelectBtnCount from "~/components/Main/Form/SelectBtnCount.vue";
+
+const authStore = useAuthStore();
+const authModalStore = useAuthModalStore();
+//
+const router = useRouter();
+const route = useRoute();
+
+// Список городов
+const cities = [
+  {id: 1, name: 'Москва'},
+  {id: 2, name: 'Санкт-Петербург'},
+  {id: 3, name: 'Новосибирск'},
+  // Добавьте остальные города по мере необходимости
+];
+
+interface FormData {
+  cityFrom: { value: string | null };
+  cityTo: { value: string | null };
+  weight: { value: number | null };
+  size: { value: number | null };
+  textMsg: { value: String | null }
+}
+
+// Состояние выбранного города
+const selectedCity = ref(null);
+
+const data = ref<FormData>({
+  active: true,
+  form: {
+    cityFrom: {
+      value: null
+    },
+    cityTo: {
+      value: null
+    },
+    weight: {
+      value: null
+    },
+    size: {
+      value: null
+    },
+    textMsg: {
+      value: ""
+    }
+  }
+});
+
+// Функция для исключения выбранного города из списка
+const citiesExcept = (selectedCity) => {
+  return cities.filter(city => !selectedCity || city.id !== selectedCity.id);
+};
+
+// Computed-свойство для валидации всех полей формы
+const isFormValid = computed(() => {
+  const {cityFrom, cityTo, weight, size, textMsg} = data.value.form;
+
+  // Проверяем, что все поля имеют значения
+  return (
+      cityFrom.value !== null &&
+      cityTo.value !== null &&
+      weight.value !== null &&
+      size.value !== null &&
+      textMsg.value.trim() !== '' && textMsg.value.length > 100
+  );
+});
+
+function sendNewOrder() {
+  if (authStore.checkAuthUser) {
+    const new_uuid = 'new_uuid';
+    //
+    router.push({
+      name: 'delivery-orders-info-id', params: {
+        id: 'new_uuid'
+      }
+    });
+  } else {
+    authModalStore.setStatusShowModalSignIn(true);
+  }
+}
+
+// let data_form = ref({});
+</script>
 <template>
   <div class="searchDriversOffer">
     <div class="searchDriversOfferBlock">
@@ -8,92 +97,106 @@
       </div>
       <div class="searchDriversOfferForm">
         <div class="searchDriversOfferFormBody" style="margin-bottom: 36px">
-          <div class="searchDriversOfferFormWrapper" style="display: flex; flex-flow: row wrap; gap:16px; margin-bottom: 24px">
-            <div class="searchDriversOfferFormInput __Active">
-              <div class="searchDriversOfferFormInputBlock">
-                <div class="searchDriversOfferFormInputWrapper">
-                  <div class="searchDriversOfferFormInputIcon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                          d="M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 10.8181 20.7672 9.64778 20.3149 8.55585C19.8626 7.46392 19.1997 6.47177 18.364 5.63604C17.5282 4.80031 16.5361 4.13738 15.4442 3.68508C14.3522 3.23279 13.1819 3 12 3C10.8181 3 9.64778 3.23279 8.55585 3.68508C7.46392 4.13738 6.47177 4.80031 5.63604 5.63604C4.80031 6.47177 4.13738 7.46392 3.68508 8.55585C3.23279 9.64778 3 10.8181 3 12Z"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M12 17L11 13L7 12L16 8L12 17Z" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                  <div class="searchDriversOfferFormInputTitle">
-                    Пункт отправления
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="searchDriversOfferFormInput">
-              <div class="searchDriversOfferFormInputBlock">
-                <div class="searchDriversOfferFormInputWrapper">
-                  <div class="searchDriversOfferFormInputIcon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                          d="M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 10.8181 20.7672 9.64778 20.3149 8.55585C19.8626 7.46392 19.1997 6.47177 18.364 5.63604C17.5282 4.80031 16.5361 4.13738 15.4442 3.68508C14.3522 3.23279 13.1819 3 12 3C10.8181 3 9.64778 3.23279 8.55585 3.68508C7.46392 4.13738 6.47177 4.80031 5.63604 5.63604C4.80031 6.47177 4.13738 7.46392 3.68508 8.55585C3.23279 9.64778 3 10.8181 3 12Z"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M12 17L11 13L7 12L16 8L12 17Z" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                  <div class="searchDriversOfferFormInputTitle">
-                    Пункт назначения
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="searchDriversOfferFormInput">
-              <div class="searchDriversOfferFormInputBlock">
-                <div class="searchDriversOfferFormInputWrapper">
-                  <div class="searchDriversOfferFormInputIcon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                          d="M8.99988 6C8.99988 6.79565 9.31595 7.55871 9.87856 8.12132C10.4412 8.68393 11.2042 9 11.9999 9C12.7955 9 13.5586 8.68393 14.1212 8.12132C14.6838 7.55871 14.9999 6.79565 14.9999 6C14.9999 5.20435 14.6838 4.44129 14.1212 3.87868C13.5586 3.31607 12.7955 3 11.9999 3C11.2042 3 10.4412 3.31607 9.87856 3.87868C9.31595 4.44129 8.99988 5.20435 8.99988 6Z"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path
-                          d="M6.8349 9H17.1649C17.3991 8.99996 17.6259 9.08213 17.8057 9.23216C17.9855 9.3822 18.107 9.59059 18.1489 9.821L19.7859 18.821C19.8121 18.9651 19.8064 19.1133 19.769 19.2549C19.7317 19.3966 19.6637 19.5283 19.5698 19.6408C19.4759 19.7532 19.3585 19.8437 19.2258 19.9058C19.0931 19.9679 18.9484 20 18.8019 20H5.1979C5.05141 20 4.9067 19.9679 4.77401 19.9058C4.64131 19.8437 4.52388 19.7532 4.43001 19.6408C4.33615 19.5283 4.26813 19.3966 4.23079 19.2549C4.19345 19.1133 4.18768 18.9651 4.2139 18.821L5.8509 9.821C5.89283 9.59059 6.01429 9.3822 6.19411 9.23216C6.37393 9.08213 6.60071 8.99996 6.8349 9Z"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+          <div class="searchDriversOfferFormWrapper"
+               style="display: flex; flex-flow: row wrap; gap:14px; margin-bottom: 24px; overflow-y: auto; overflow-x: hidden">
+            {{ selectedCity }}
+            <!--            <div class="searchDriversOfferFormInput">-->
+            <SelectBtnCityList v-model:citySelected="data.form.cityFrom.value"
+                               :selectDefTitle="'Пункт отправки'"
+                               :cities="cities"
+            />
+            <!--              <div class="searchDriversOfferFormInputBlock">-->
+            <!--                <div class="searchDriversOfferFormInputWrapper">-->
+            <!--                  <div class="searchDriversOfferFormInputIcon">-->
+            <!--                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+            <!--                      <path-->
+            <!--                          d="M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 10.8181 20.7672 9.64778 20.3149 8.55585C19.8626 7.46392 19.1997 6.47177 18.364 5.63604C17.5282 4.80031 16.5361 4.13738 15.4442 3.68508C14.3522 3.23279 13.1819 3 12 3C10.8181 3 9.64778 3.23279 8.55585 3.68508C7.46392 4.13738 6.47177 4.80031 5.63604 5.63604C4.80031 6.47177 4.13738 7.46392 3.68508 8.55585C3.23279 9.64778 3 10.8181 3 12Z"-->
+            <!--                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+            <!--                      <path d="M12 17L11 13L7 12L16 8L12 17Z" stroke="currentColor" stroke-width="2"-->
+            <!--                            stroke-linecap="round"-->
+            <!--                            stroke-linejoin="round"/>-->
+            <!--                    </svg>-->
+            <!--                  </div>-->
+            <!--                  <div class="searchDriversOfferFormInputTitle">-->
+            <!--                    Пункт отправления-->
+            <!--                  </div>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--            </div>-->
 
-                  </div>
-                  <div class="searchDriversOfferFormInputTitle">
-                    Вес груза
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="searchDriversOfferFormInput">
-              <div class="searchDriversOfferFormInputBlock">
-                <div class="searchDriversOfferFormInputWrapper">
-                  <div class="searchDriversOfferFormInputIcon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                          d="M9 8V10M6 8V11M12 8V11M18 8V11M15 8V10M19.875 8C20.496 8 21 8.512 21 9.143V14.857C21 15.488 20.496 16 19.875 16H4C3.73478 16 3.48043 15.8946 3.29289 15.7071C3.10536 15.5196 3 15.2652 3 15V9.143C3 8.512 3.504 8 4.125 8H19.875Z"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+            <SelectBtnCityList v-model:citySelected="data.form.cityTo.value"
+                               :selectDefTitle="'Пункт назначения'"
+                               :citySelected="data.form.cityTo.value"
+                               :cities="citiesExcept(data.form.cityFrom.value)"
+            />
+            <!--            <div class="searchDriversOfferFormInput">-->
+            <!--              <div class="searchDriversOfferFormInputBlock">-->
+            <!--                <div class="searchDriversOfferFormInputWrapper">-->
+            <!--                  <div class="searchDriversOfferFormInputIcon">-->
+            <!--                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+            <!--                      <path-->
+            <!--                          d="M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 10.8181 20.7672 9.64778 20.3149 8.55585C19.8626 7.46392 19.1997 6.47177 18.364 5.63604C17.5282 4.80031 16.5361 4.13738 15.4442 3.68508C14.3522 3.23279 13.1819 3 12 3C10.8181 3 9.64778 3.23279 8.55585 3.68508C7.46392 4.13738 6.47177 4.80031 5.63604 5.63604C4.80031 6.47177 4.13738 7.46392 3.68508 8.55585C3.23279 9.64778 3 10.8181 3 12Z"-->
+            <!--                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+            <!--                      <path d="M12 17L11 13L7 12L16 8L12 17Z" stroke="currentColor" stroke-width="2"-->
+            <!--                            stroke-linecap="round"-->
+            <!--                            stroke-linejoin="round"/>-->
+            <!--                    </svg>-->
+            <!--                  </div>-->
+            <!--                  <div class="searchDriversOfferFormInputTitle">-->
+            <!--                    Пункт назначения-->
+            <!--                  </div>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--            </div>-->
+
+            <SelectBtnCount placeholderText="Вес груза" v-model:sizeCount="data.form.weight.value" qtyName="КГ">
+              <template #Icon>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+                  <path
+                      d="M8.99988 6C8.99988 6.79565 9.31595 7.55871 9.87856 8.12132C10.4412 8.68393 11.2042 9 11.9999 9C12.7955 9 13.5586 8.68393 14.1212 8.12132C14.6838 7.55871 14.9999 6.79565 14.9999 6C14.9999 5.20435 14.6838 4.44129 14.1212 3.87868C13.5586 3.31607 12.7955 3 11.9999 3C11.2042 3 10.4412 3.31607 9.87856 3.87868C9.31595 4.44129 8.99988 5.20435 8.99988 6Z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path
+                      d="M6.8349 9H17.1649C17.3991 8.99996 17.6259 9.08213 17.8057 9.23216C17.9855 9.3822 18.107 9.59059 18.1489 9.821L19.7859 18.821C19.8121 18.9651 19.8064 19.1133 19.769 19.2549C19.7317 19.3966 19.6637 19.5283 19.5698 19.6408C19.4759 19.7532 19.3585 19.8437 19.2258 19.9058C19.0931 19.9679 18.9484 20 18.8019 20H5.1979C5.05141 20 4.9067 19.9679 4.77401 19.9058C4.64131 19.8437 4.52388 19.7532 4.43001 19.6408C4.33615 19.5283 4.26813 19.3966 4.23079 19.2549C4.19345 19.1133 4.18768 18.9651 4.2139 18.821L5.8509 9.821C5.89283 9.59059 6.01429 9.3822 6.19411 9.23216C6.37393 9.08213 6.60071 8.99996 6.8349 9Z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </template>
+            </SelectBtnCount>
+
+            <SelectBtnCount placeholderText="Объем груза" v-model:sizeCount="data.form.size.value" qtyName="м2">
+
+              <template #Icon>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+                  <path
+                      d="M9 8V10M6 8V11M12 8V11M18 8V11M15 8V10M19.875 8C20.496 8 21 8.512 21 9.143V14.857C21 15.488 20.496 16 19.875 16H4C3.73478 16 3.48043 15.8946 3.29289 15.7071C3.10536 15.5196 3 15.2652 3 15V9.143C3 8.512 3.504 8 4.125 8H19.875Z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </template>
+
+            </SelectBtnCount>
+
+            <!--            {{ data.form }}-->
 
 
-                  </div>
-                  <div class="searchDriversOfferFormInputTitle">
-                    Вес груза
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="searchDriversOfferFormWrapper" style="overflow: hidden;box-sizing: border-box;">
-            <textarea placeholder="Напишите описание что требуется в заявке" style="width: 100%; min-width: 100%; max-width: 100%; border: solid 1px #eee; border-radius: var(--main-border-radius); min-height: 6vh; max-height: 12vh; font-size: 16px; padding: 16px; box-sizing: border-box"></textarea>
+            <textarea placeholder="Опишите что требуется в заявке"
+                      style="width: 100%;max-width: 100%;border: 1px solid rgb(238, 238, 238);border-radius: var(--main-border-radius);min-height: 8vh;max-height: 12vh;font-size: 14px;padding: 16px;box-sizing: border-box;display: inline-flex;overflow-x: hidden; overflow-y: auto"
+                      v-model="data.form.textMsg.value"></textarea>
+
+          </div>
+          <div class="textValidate">
+            <div class="textValidateOk" v-if="data.form.textMsg.value.trim() && data.form.textMsg.value.length > 100">
+              Отлично
+            </div>
+            <div class="textValidateBad" v-else>
+              Описание должно быть не менее 100 символов (Заполните поле!)
+            </div>
           </div>
         </div>
         <div class="searchDriversOfferFormFooter">
-          <div class="searchDriversOfferFormBtn">
-            <button
-                style="">
+          <div class="searchDriversOfferFormBtn" v-if="data.active">
+            <button :disabled="!isFormValid"
+                    style="" @click="sendNewOrder">
               <span class="searchDriversOfferFormBtnWrapper"
                     style="">
                 <span class="searchDriversOfferFormBtnIcon" style="display: flex;">
@@ -124,12 +227,6 @@ color: var(--brand-primary-color);
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "SearchDriversOffersWgt"
-}
-</script>
 
 <style scoped>
 .searchDriversOfferBlock {
@@ -211,6 +308,10 @@ export default {
   cursor: pointer;
 }
 
+.searchDriversOfferFormBtn button:disabled {
+  opacity: 0.6;
+}
+
 .searchDriversOfferFormBtn .searchDriversOfferFormBtnWrapper {
   display: flex;
   align-items: center;
@@ -219,8 +320,18 @@ export default {
 }
 
 .searchDriversOfferFormBtn button:hover,
-.searchDriversOfferFormBtn button:focus{
+.searchDriversOfferFormBtn button:focus {
   opacity: 0.7;
+}
+
+.textValidateOk {
+  margin-top: 10px;
+  color: limegreen;
+}
+
+.textValidateBad {
+  margin-top: 10px;
+  color: orange;
 }
 
 </style>

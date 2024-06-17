@@ -22,6 +22,10 @@ export default defineNuxtConfig({
             baseURL: "/"
         },
     },
+    css: [
+        'notivue/notification.css', // Only needed if using built-in <Notification />
+        'notivue/animations.css' // Only needed if using default animations
+    ],
     modules: [
         [
             '@pinia/nuxt',
@@ -33,8 +37,8 @@ export default defineNuxtConfig({
         ],
         // '@nuxtjs/axios',
         //'@nuxt/image',
-        '@sidebase/nuxt-auth',
-
+        // '@sidebase/nuxt-auth',
+        'notivue/nuxt'
     ],
     plugins: [
         "~/plugins/fetchApi.js",
@@ -47,6 +51,16 @@ export default defineNuxtConfig({
 
     nitro: {
         static: true,
+    },
+
+    notivue: {
+        position: 'bottom-right',
+        // Options
+        notifications: {
+            global: {
+                // duration: Infinity,
+            },
+        },
     },
 
     //

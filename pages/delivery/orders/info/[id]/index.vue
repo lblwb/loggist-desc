@@ -1,29 +1,15 @@
 <script setup lang="ts">
 import {useDeliveryOrders} from "~/stores/delivery/orders";
+import OrderOffersBlockItem from "~/components/Main/Widgets/Orders/Offers/OrderOffersBlockItem.vue";
+import OrderChatBlock from "~/components/Main/Widgets/Orders/Chat/OrderChatBlock.vue";
 
 const storeDeliveryOrders = useDeliveryOrders();
 
 const route = useRoute();
 
 let data = reactive({
-  cargo_order: {
-    "idx": "7cfbec67-5c3f-4d16-9d51-74e25b5853f4",
-    "cargo_type": "building_materials",
-    "cargo_inf_to": "Москва",
-    "cargo_inf_from": "Санкт-Петербург",
-    "cargo_inf_size": "10",
-    "cargo_inf_wht": "10",
-    "cargo_deliv_start_at": "2024-06-09T04:07:47Z",
-    "cargo_deliv_end_at": null,
-    "status": "pending_accept",
-    "description": "Перевозка строительных материалов из Москвы в Санкт-Петербург. Вес груза составляет 2 тонны, объем - 10 куб. м. Планируемая дата отправления - 15 июня 2024 года. Просьба предоставить услуги по погрузке и разгрузке груза.",
-    "client": {
-      "username": "bambim"
-    },
-    "courier": null,
-    "created_at": null,
-    "updated_at": null
-  },
+  cargo_order: {},
+  cargo_order_offers: [],
 });
 
 
@@ -47,6 +33,10 @@ onMounted(async () => {
   let param_slug = route.params.id;
   await storeDeliveryOrders.fetchOrderBySlug(param_slug);
   data.cargo_order = await storeDeliveryOrders.GetOrderSingleItem;
+//
+  await storeDeliveryOrders.fetchOffersWithOrderBySlug(param_slug);
+  data.cargo_order_offers = await storeDeliveryOrders.GetOffersOrderSingleItem;
+  window.cargo_order_offers = await storeDeliveryOrders.GetOffersOrderSingleItem;
 })
 
 </script>
@@ -119,7 +109,7 @@ onMounted(async () => {
     <div class="deliveryBody">
       <div class="deliveryBodyOfferWrapper" style="display: flex; gap: 48px">
         <div class="deliveryBodyOfferInfo" style="flex: 1">
-          <div class="deliveryBodyOfferInfoBlock">
+          <div class="deliveryBodyOfferInfoBlock" style="margin-bottom: 14px;">
             <div class="deliveryBodyCargsItem" v-if="data.cargo_order !== null"
                  style="">
               <div class="deliveryBodyCargsItemBlock"
@@ -257,22 +247,11 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-        </div>
-        <div class="deliveryBodyOfferMessanger" style="flex: 1; display: flex; align-items: stretch;">
-          <div class="offerMessangerBlock"
-               style="background: #fff; width: 100%; border-radius: var(--main-border-radius); overflow: hidden; padding: 24px;">
-            <div class="offerMessangerBlockHeading">
-              <div class="offerMessangerBlockHeadingTitle cargsItemHeadingTitle">
-                Чат с перевозчиком
-              </div>
-            </div>
-            <div class="offerMessangerBlockBody">
-              <div class="offerMessangerBlockBodyMsg">
 
-              </div>
-            </div>
-          </div>
+
+          <OrderOffersBlockItem :offersItems="data.cargo_order_offers"/>
         </div>
+        <OrderChatBlock :orderId="data.cargo_order.idx" v-if="data.cargo_order.idx" />
       </div>
     </div>
   </div>

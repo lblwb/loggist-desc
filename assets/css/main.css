@@ -16,6 +16,7 @@
     /* input */
     --input-bg-color: transparent;
     --input-brd-color: #1C212C;
+        --input-fcs-brd-color: #f5f5f5;
     --input-text-color: #485267;
     /* Navbar */
     --navbar-bg-color: transparent;

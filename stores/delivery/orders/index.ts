@@ -4,7 +4,7 @@
 import {defineStore} from 'pinia';
 
 
-interface DeliveryOrders {
+export interface DeliveryOrders {
     idx: string;
     cargo_type: string;
     cargo_inf_to: string;
@@ -23,6 +23,7 @@ interface DeliveryOrders {
     updated_at: Date | null;
 }
 
+
 interface DeliveryOrdersData {
     orders: DeliveryOrders[];
     success: boolean;
@@ -33,6 +34,18 @@ interface DeliveryOrdersData {
     success: boolean;
 }
 
+export interface DeliveryOffer {
+    idx: string;
+    offer_amount: string;
+    offer_date: string;
+}
+
+interface DeliveryOrderOffersData {
+    offers: DeliveryOffer[];
+    success: boolean;
+}
+
+
 export const useDeliveryOrders = defineStore('delivery_offers', {
     state: () => ({
         orders: {
@@ -42,7 +55,10 @@ export const useDeliveryOrders = defineStore('delivery_offers', {
             },
 
             single: {
-                data: {} as DeliveryOrders
+                data: {} as DeliveryOrders,
+                offers: {
+                    data: [] as DeliveryOffer[]
+                }
             }
             // count: 0
         }
@@ -103,6 +119,23 @@ export const useDeliveryOrders = defineStore('delivery_offers', {
                 return [];
             }
         },
+        /**
+         * Fetch Offers By Single Order
+         * @param slugName
+         */
+        async fetchOffersWithOrderBySlug(slugName: string) {
+            try {
+                // @ts-ignore
+                const {offers} = await useNuxtApp()
+                    .$api<DeliveryOrdersData[]>(`/api/orders/${slugName}/offers`)
+                // @ts-ignore
+                this.orders.single.offers.data = offers;
+                return offers;
+            } catch (e) {
+                console.error('Error fetching single offer:', e);
+                return [];
+            }
+        },
     },
     getters: {
         /**
@@ -120,6 +153,10 @@ export const useDeliveryOrders = defineStore('delivery_offers', {
 
         async GetOrderSingleItem(state: any): Promise<any> {
             return state.orders && state.orders.single !== null && state.orders.single.data !== null ? state.orders.single.data : null;
+        },
+
+        async GetOffersOrderSingleItem(state: any): Promise<any> {
+            return state.orders && state.orders.single !== null && state.orders.single.offers.data !== null ? state.orders.single.offers.data : null;
         }
     }
 })

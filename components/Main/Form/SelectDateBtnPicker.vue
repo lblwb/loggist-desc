@@ -70,10 +70,11 @@ export default {
   padding: 10px 15px;
   border: 1px solid #EAEAEA;
   border-radius: 10px;
-  background-color: #fff;
+  /*background-color: #fff;*/
+  background: transparent;
   cursor: pointer;
-  font-size: 16px;
-  min-width: 11vw;
+  font-size: 14px;
+  min-width: 10vw;
 }
 
 .select-button .icon {

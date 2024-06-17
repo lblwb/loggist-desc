@@ -66,9 +66,10 @@ export default {
   padding: 10px 15px;
   border: 1px solid #EAEAEA;
   border-radius: 10px;
-  background-color: #fff;
+  /*background-color: #fff;*/
+  background: transparent;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   min-width: 13vw;
 }
 
@@ -106,7 +107,7 @@ export default {
   z-index: 1;
   margin-top: 5px;
   border-radius: 10px;
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .input-group {
