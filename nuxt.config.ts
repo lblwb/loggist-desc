@@ -45,13 +45,17 @@ export default defineNuxtConfig({
         "~/plugins/authCheckPlugin.js"
     ],
     mode: 'universal',
-    target: 'static',
-    ssr: false,
-    spaLoadingTemplate: true,
-
-    nitro: {
-        static: true,
+    ssr: false, // Отключаем серверный рендеринг
+    target: 'static', // Используем статическую генерацию
+    generate: {
+        dir: 'dist' // Указываем папку для выходных данных сборки
     },
+    nitro: {
+        output: {
+            publicDir: 'dist' // Указываем папку для публичных файлов
+        }
+    },
+    spaLoadingTemplate: true,
 
     notivue: {
         position: 'bottom-right',
