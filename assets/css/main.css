@@ -16,7 +16,7 @@
     /* input */
     --input-bg-color: transparent;
     --input-brd-color: #1C212C;
-        --input-fcs-brd-color: #f5f5f5;
+    --input-fcs-brd-color: #f5f5f5;
     --input-text-color: #485267;
     /* Navbar */
     --navbar-bg-color: transparent;
@@ -31,6 +31,8 @@
 
 * {
     box-sizing: border-box;
+    text-wrap: wrap;
+    word-break: break-word;
 }
 
 html {
@@ -45,6 +47,8 @@ html, body {
     background: var(--primary-bg-color);
     color: var(--primary-text-color);
     font-family: var(--main-font-family);
+    line-height: 20px;
+    text-align: left;
 }
 
 .cargoBody {
@@ -76,7 +80,7 @@ html, body {
 .CargoWidgetBlock {
     border: solid 1px #F8F8F8;
     border-radius: var(--main-border-radius);
-    padding: 8px 10px;
+    padding: 8px 16px;
 }
 
 .CargoWidgetBlock .CargoWidgetBlockWrapper {
@@ -99,4 +103,5 @@ html, body {
 
 .CargoWidgetBlock .CargoWidgetBlockIcon {
     color: #FF9863;
+    display: flex;
 }

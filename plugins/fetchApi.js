@@ -1,21 +1,18 @@
-// @ts-ignore
-// export const useMyFetch = (request, opts) => {
-//     const config = useRuntimeConfig();
-//     console.log(config.public.baseURL);
-//     return useFetch(request, { baseURL: config.public.baseURL, ...opts })
-// }
+import {useAuthStore} from "~/stores/auth/index";
 
-export default defineNuxtPlugin(() => {
+
+export default defineNuxtPlugin((nuxtApp) => {
     // const { session } = useUserSession()
+    const authStore = useAuthStore(nuxtApp.$pinia);
     const config = useRuntimeConfig();
     const $api = $fetch.create({
         baseURL: config.public.baseURL,
         onRequest({request, options, error}) {
-            // if (session.value?.token) {
-            //     // Add Authorization header
-            //     options.headers = options.headers || {}
-            //     options.headers.Authorization = `Bearer ${session.value?.token}`
-            // }
+            if (authStore.checkAuthUser) {
+                // Add Authorization header
+                options.headers = options.headers || {}
+                options.headers.Authorization = `Bearer ${authStore.getToken}`
+            }
         },
         onResponseError({response}) {
             if (response.status === 401) {

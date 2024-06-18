@@ -33,13 +33,26 @@ watch(() => authStore.getUserData, (last: any, next: any) => {
 })
 
 
-const userData  = computed(() => authStore.getUserData);
+const userData = computed(() => authStore.getUserData);
+const userDataGroup = computed(() => {
+  const data = userData.value;  // Используем .value для доступа к значению computed
+  return data && data.groups ? data.groups : [];
+});
+
+const userTextGroups = computed(() => {
+  const groups = userDataGroup.value;  // Используем .value для доступа к значению computed
+  if (Array.isArray(groups)) {
+    return groups.map(item => item.name).join(',');
+  } else {
+    return '';
+  }
+});
 </script>
 
 <template>
   <div class="NavbarHeader">
-    <div class="NavbarHeaderWrapper" style="display: flex; flex-flow: row wrap; align-items: center; gap: 24px 36px;">
-      <div class="NavbarHeaderLogo" @click="router.push({name: 'index'})" style="flex: 1; cursor: pointer">
+    <div class="NavbarHeaderWrapper" style="display: flex; flex-flow: row wrap; align-items: center; gap: 24px 24px;">
+      <div class="NavbarHeaderLogo" @click="router.push({name: 'index'})" style="flex: 1; cursor: pointer;">
         <svg width="117" height="37" viewBox="0 0 117 37" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="1" y="1" width="115" height="35" rx="17.5" stroke="#FF5E00" stroke-width="2"/>
           <path
@@ -48,10 +61,10 @@ const userData  = computed(() => authStore.getUserData);
         </svg>
       </div>
       <div class="NavbarHeaderLinks" style="flex: auto;display: flex;align-items: center;justify-content: center;">
-        <div class="NavbarHeaderLinksWrapper">
+        <div class="NavbarHeaderLinksWrapper __Large">
           <div class="NavbarHeaderLinksItem" @click="router.push({name: 'static-services'})"
                :class="{'__Active': route &&  route.name && route.name === 'static-services'}">
-            <div class="NavbarHeaderLinksItemWrap">
+            <div class="NavbarHeaderLinksItemWrap ">
               <div class="NavbarHeaderLinksItemIcon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -181,6 +194,7 @@ const userData  = computed(() => authStore.getUserData);
                 <div class="NavbarHeaderLinksItemWrap">
                   <div class="NavbarHeaderLinksItemTitle">
                     {{ userData.username }}
+                    <small>[{{ userTextGroups }}]</small>
                   </div>
                 </div>
               </div>
@@ -207,7 +221,11 @@ const userData  = computed(() => authStore.getUserData);
 .NavbarHeaderLinksWrapper {
   display: flex;
   flex-flow: row wrap;
-  gap: 18px 24px;
+  gap: 14px 18px;
+}
+
+.NavbarHeaderLinksWrapper.__Large {
+  gap: 14px 24px;
 }
 
 .NavbarHeaderLinksItem {

@@ -196,6 +196,7 @@ onMounted(async () => {
   flex: unset;
   flex-basis: 30vw;
   width: 100%;
+  overflow: hidden;
 }
 
 .deliveryBodyCargs .deliveryBodyCargsItem .deliveryBodyCargsItemBlock {
@@ -270,7 +271,9 @@ onMounted(async () => {
 
 .deliveryBodyCargs .deliveryBodyCargsItem .deliveryBodyCargsItemBlock .deliveryBodyCargsItemDesc .cargsItemDescHeading .cargsItemDescHeadingText {
   font-size: 13px;
-  font-weight: 500
+  font-weight: 500;
+  max-height: 3vw;
+  overflow: auto;
 }
 
 .deliveryBodyCargs .deliveryBodyCargsItem .deliveryBodyCargsItemBlock .deliveryBodyCargsItemAction {

@@ -268,6 +268,8 @@ onMounted(async () => {
   flex: unset;
   flex-basis: 30vw;
   width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .deliveryBodyCargsItem .deliveryBodyCargsItemBlock {

@@ -5,9 +5,11 @@ import {useAuthModalStore} from "~/stores/auth/modal/singIn";
 import {useAuthStore} from "~/stores/auth";
 import SelectBtnCityList from "~/components/Main/Form/SelectBtnCityList.vue";
 import SelectBtnCount from "~/components/Main/Form/SelectBtnCount.vue";
+import {useNewDelvOrderStore} from "~/stores/delivery/orders/create";
 
 const authStore = useAuthStore();
 const authModalStore = useAuthModalStore();
+const createNewOrderStore = useNewDelvOrderStore()
 //
 const router = useRouter();
 const route = useRoute();
@@ -20,7 +22,8 @@ const cities = [
   // Добавьте остальные города по мере необходимости
 ];
 
-interface FormData {
+
+interface NewOrderFormData {
   cityFrom: { value: string | null };
   cityTo: { value: string | null };
   weight: { value: number | null };
@@ -31,9 +34,10 @@ interface FormData {
 // Состояние выбранного города
 const selectedCity = ref(null);
 
-const data = ref<FormData>({
+const data = ref({
   active: true,
-  form: {
+  // Forms
+  form: <NewOrderFormData>{
     cityFrom: {
       value: null
     },
@@ -71,19 +75,54 @@ const isFormValid = computed(() => {
   );
 });
 
-function sendNewOrder() {
-  if (authStore.checkAuthUser) {
-    const new_uuid = 'new_uuid';
-    //
-    router.push({
-      name: 'delivery-orders-info-id', params: {
-        id: 'new_uuid'
+async function sendNewOrder() {
+  try {
+    if (authStore.checkAuthUser) { // Ensure checkAuthUser is a method call
+      // Extract raw data from the reactive object
+      const dataForm = toRaw(data.value);
+
+      console.log(dataForm);
+
+      if (dataForm && dataForm.form) { // Ensure dataForm and dataForm.form are not null
+        // Send the form data to create a new order
+        let resultOrder = await createNewOrderStore.fetchNewOrderForm({
+          form: dataForm.form
+        });
+
+
+        console.log("result ORder:", resultOrder);
+
+        if (resultOrder !== null && resultOrder.idx !== undefined && resultOrder.idx !== null) {
+          navigateTo({
+            name: 'delivery-orders-info-id',
+            params: {id: resultOrder.idx}
+          });
+        } else {
+          throw new Error("Not redirect / not avial id");
+        }
+        // Uncomment and adjust the router redirection as needed
+        // router.push({
+        //   name: 'delivery-orders-info-id',
+        //   params: { id: 'new_uuid' }
+        // });
+
+      } else {
+        throw new Error("Form data is null");
       }
+    } else {
+      // Show the sign-in modal if the user is not authenticated
+      authModalStore.setStatusShowModalSignIn(true);
+    }
+  } catch (e) {
+    console.error("Error creating new order:", e);
+    notivue.push.warning({
+      title: 'Заявка - Поиск перевозчика',
+      message: 'Ошибка при создании заявки. Попробуйте позже!',
+      duration: 5000,
     });
-  } else {
-    authModalStore.setStatusShowModalSignIn(true);
   }
 }
+
 
 // let data_form = ref({});
 </script>
@@ -95,11 +134,12 @@ function sendNewOrder() {
           Начните поиск перевозчика:
         </div>
       </div>
+      <!--      {{data}}-->
       <div class="searchDriversOfferForm">
         <div class="searchDriversOfferFormBody" style="margin-bottom: 36px">
           <div class="searchDriversOfferFormWrapper"
                style="display: flex; flex-flow: row wrap; gap:14px; margin-bottom: 24px; overflow-y: auto; overflow-x: hidden">
-            {{ selectedCity }}
+            <!--            {{ selectedCity }}-->
             <!--            <div class="searchDriversOfferFormInput">-->
             <SelectBtnCityList v-model:citySelected="data.form.cityFrom.value"
                                :selectDefTitle="'Пункт отправки'"
